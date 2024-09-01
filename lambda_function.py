@@ -8,7 +8,7 @@ table = dynamodb.Table("shikakupass-users")
 
 print("Loading function")
 
-# ダミー
+
 def lambda_handler(event, context):
     operation = event["queryStringParameters"]["operation"]
 
