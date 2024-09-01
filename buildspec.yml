@@ -1,0 +1,30 @@
+version: 0.2
+env:
+  variables:
+    tag_name: codebuild
+    version: 1.0.0
+    func_name: shikakupass-lambda
+    alias_name: dev
+phases:
+  pre_build:
+    commands:
+      - echo No prebuild
+  build:
+    commands:
+      - echo Build started on `date`
+      - CurrentVersion=$(echo $(aws lambda get-alias --function-name $func_name --name $alias_name | grep FunctionVersion | tail -1 |tr -cd 0-9))
+      - zip -r lambda.zip ./lambda_function.py
+      - aws lambda update-function-code --function-name $func_name --zip-file fileb://lambda.zip
+      - sleep 5
+  post_build:
+    commands:
+      - echo Post Build started on `date`
+      - aws lambda publish-version --function-name $func_name
+      - TargetVersion=$(echo $(aws lambda list-versions-by-function --function-name $func_name | grep Version | tail -1 | tr -cd 0-9))
+      - echo $CurrentVersion
+      - echo $TargetVersion
+      - sed -i -e "s/{{CurrentVersion}}/$CurrentVersion/g" appspec.yml
+      - sed -i -e "s/{{TargetVersion}}/$TargetVersion/g" appspec.yml
+artifacts:
+  files:
+    - "**/*"

@@ -1,0 +1,9 @@
+version: 0.0
+Resources:
+  - testfunc:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "shikakupass-lambda" # 007のLambda
+        Alias: "dev"
+        CurrentVersion: "{{CurrentVersion}}"
+        TargetVersion: "{{TargetVersion}}"
